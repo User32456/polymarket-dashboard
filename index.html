@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polymarket Synthesis â 22 mars 2026</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --card: #111827;
+    --border: #1e2a3a;
+    --text: #e2e8f0;
+    --muted: #8899aa;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+    line-height: 1.6;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+  .header .sub { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+  .header .regime-badge {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .regime-stagflation {
+    background: rgba(239,68,68,0.12);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: var(--red);
+  }
+
+  /* CONVICTION BAR */
+  .conviction-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .conviction-item {
+    text-align: center;
+  }
+  .conviction-item .label {
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+  .conviction-item .value {
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  .conviction-item .context {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* SECTION NARRATIVE */
+  .narrative-box {
+    background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(245,158,11,0.04));
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 28px;
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .narrative-box h2 {
+    color: var(--text);
+    font-size: 1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .narrative-box strong { color: var(--text); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: var(--text); border-color: var(--blue); }
+  .tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS & GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .card h3 {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+
+  /* MARKET ROWS */
+  .market-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(30,42,58,0.5);
+    font-size: 0.82rem;
+  }
+  .market-row:last-child { border-bottom: none; }
+  .market-row .name { flex: 1; font-weight: 500; }
+  .market-row .prob {
+    font-weight: 800;
+    font-size: 1rem;
+    min-width: 55px;
+    text-align: right;
+  }
+  .market-row .vol {
+    color: var(--muted);
+    font-size: 0.72rem;
+    min-width: 80px;
+    text-align: right;
+  }
+  .market-row .delta {
+    font-size: 0.72rem;
+    min-width: 55px;
+    text-align: right;
+    margin-left: 8px;
+  }
+
+  /* PROBABILITY BAR */
+  .prob-bar-container {
+    flex: 0 0 120px;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    margin: 0 12px;
+    overflow: hidden;
+  }
+  .prob-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .prob-high { background: var(--green); }
+  .prob-mid { background: var(--amber); }
+  .prob-low { background: var(--red); }
+
+  /* HIGHLIGHT */
+  .highlight { background: rgba(245,158,11,0.06); border-radius: 4px; padding: 0 4px; }
+
+  /* ASYMMETRY TAG */
+  .asym-tag {
+    display: inline-block;
+    font-size: 0.62rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
+    background: rgba(168,85,247,0.2);
+    color: var(--purple);
+    letter-spacing: 0.3px;
+  }
+
+  /* HIGH VOL TAG */
+  .vol-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+    background: rgba(59,130,246,0.15);
+    color: var(--blue);
+    margin-left: 4px;
+  }
+
+  /* TAIL RISK TABLE */
+  .tail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .tail-card {
+    background: var(--card);
+    border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .tail-card .title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .tail-card .odds {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--purple);
+  }
+  .tail-card .rationale {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--muted);
+    font-size: 0.68rem;
+    border-top: 1px solid var(--border);
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <h1>Polymarket â SynthÃ¨se des anticipations</h1>
+    <div class="sub">Samedi 22 mars 2026 â Ãconomie Â· GÃ©opolitique Â· Technologie</div>
+  </div>
+  <div class="regime-badge regime-stagflation">
+    RÃGIME : STAGFLATION GÃOPOLITIQUE
+  </div>
+</div>
+
+<!-- TOP-LINE CONVICTIONS -->
+<div class="conviction-bar">
+  <div class="conviction-item">
+    <div class="label">Fed â Aucune baisse en 2026</div>
+    <div class="value" style="color:var(--red)">36%</div>
+    <div class="context">$12M vol Â· +1 baisse : 27%</div>
+  </div>
+  <div class="conviction-item">
+    <div class="label">Inflation US &gt; 3%</div>
+    <div class="value" style="color:var(--red)">98%</div>
+    <div class="context">&gt;3.5% : 68%</div>
+  </div>
+  <div class="conviction-item">
+    <div class="label">S&P 500 Q1 nÃ©gatif</div>
+    <div class="value" style="color:var(--red)">96%</div>
+    <div class="context">Quasi-certitude</div>
+  </div>
+  <div class="conviction-item">
+    <div class="label">RÃ©cession US d'ici fin 2026</div>
+    <div class="value" style="color:var(--amber)">36%</div>
+    <div class="context">Plus d'1/3</div>
+  </div>
+  <div class="conviction-item">
+    <div class="label">Cessez-le-feu US-Iran d'ici juin</div>
+    <div class="value" style="color:var(--amber)">56%</div>
+    <div class="context">$29M vol Â· Fin dÃ©c: 69%</div>
+  </div>
+  <div class="conviction-item">
+    <div class="label">Brent &gt;$100 fin mars</div>
+    <div class="value" style="color:var(--red)">77%</div>
+    <div class="context">$49M vol Â· &gt;$105: 56%</div>
+  </div>
+</div>
+
+<!-- NARRATIVE -->
+<div class="narrative-box">
+  <h2>ð Ce que le marchÃ© anticipe rÃ©ellement</h2>
+  <p style="margin-bottom:12px;">
+    Polymarket dessine un scÃ©nario de <strong>stagflation gÃ©opolitique prolongÃ©e</strong>. La combinaison de trois signaux est exceptionnelle : le marchÃ© donne <strong>98% de chances</strong> que l'inflation reste au-dessus de 3%, <strong>96% de chances</strong> que le S&P termine le Q1 dans le rouge, et seulement <strong>56% de chances</strong> d'un cessez-le-feu US-Iran avant l'Ã©tÃ©.
+  </p>
+  <p style="margin-bottom:12px;">
+    Sur la politique monÃ©taire, le pivot hawkish est massif : <strong>63% de probabilitÃ© cumulÃ©e d'au maximum une seule baisse de 25bps en 2026</strong>. Plus frappant, le marchÃ© donne <strong>22% de chances d'une hausse de taux</strong> â un scÃ©nario qui semblait impensable il y a 6 mois. La Fed est pricÃ©e comme piÃ©gÃ©e entre un choc pÃ©trolier inflationniste et un ralentissement Ã©conomique.
+  </p>
+  <p>
+    <strong>Le signal le plus actionnable :</strong> le diffÃ©rentiel entre le cessez-le-feu (56% d'ici juin) et la normalisation du dÃ©troit d'Ormuz (30% d'ici avril) implique que mÃªme en cas d'accord, le marchÃ© anticipe des disruptions logistiques persistantes. C'est le proxy Ã  suivre pour le Brent : <strong>Ormuz, pas le cessez-le-feu</strong>, est le vrai driver.
+  </p>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showSection('geo')">GÃ©opolitique</button>
+  <button class="tab" onclick="showSection('eco')">Ãconomie & Macro</button>
+  <button class="tab" onclick="showSection('fin')">Finance & MarchÃ©s</button>
+  <button class="tab" onclick="showSection('tech')">Technologie & IA</button>
+  <button class="tab" onclick="showSection('tails')">Paris asymÃ©triques</button>
+</div>
+
+<!-- ================================ -->
+<!-- GEOPOLITIQUE -->
+<!-- ================================ -->
+<div id="geo" class="section active">
+  <div class="grid">
+
+    <div class="card">
+      <h3>Iran â Conflit & rÃ©solution</h3>
+      <div class="market-row">
+        <div class="name">Cessez-le-feu US-Iran d'ici fin dÃ©cembre</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:69%"></div></div>
+        <div class="prob" style="color:var(--amber)">69%</div>
+        <div class="vol"><span class="vol-tag">$29M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Cessez-le-feu US-Iran d'ici fin juin</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:56%"></div></div>
+        <div class="prob" style="color:var(--amber)">56%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Forces US entrent en Iran d'ici fin dÃ©cembre</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:70%"></div></div>
+        <div class="prob" style="color:var(--amber)">70%</div>
+        <div class="vol"><span class="vol-tag">$23M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Forces US entrent en Iran d'ici fin avril</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:60%"></div></div>
+        <div class="prob" style="color:var(--amber)">60%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Trump annonce fin des opÃ©rations d'ici juin</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:73%"></div></div>
+        <div class="prob" style="color:var(--green)">73%</div>
+        <div class="vol"><span class="vol-tag">$4M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Conflit israÃ©lo-amÃ©ricain/Iran terminÃ© d'ici fin dÃ©c</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:83%"></div></div>
+        <div class="prob" style="color:var(--green)">83%</div>
+        <div class="vol"><span class="vol-tag">$5M</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Iran â Changement de rÃ©gime</h3>
+      <div class="market-row">
+        <div class="name">RÃ©gime iranien tombe d'ici fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:2%"></div></div>
+        <div class="prob" style="color:var(--muted)">2%</div>
+        <div class="vol"><span class="vol-tag">$45M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">RÃ©gime iranien tombe d'ici fin avril</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:12%"></div></div>
+        <div class="prob" style="color:var(--red)">12%</div>
+        <div class="vol"><span class="vol-tag">$9M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">RÃ©gime iranien tombe d'ici fin juin <span class="asym-tag">ASYM</span></div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:24%"></div></div>
+        <div class="prob" style="color:var(--purple)">24%</div>
+        <div class="vol"><span class="vol-tag">$20M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Reza Pahlavi entre en Iran d'ici fin dÃ©cembre</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:32%"></div></div>
+        <div class="prob" style="color:var(--amber)">32%</div>
+        <div class="vol"><span class="vol-tag">$10M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Ãle de Kharg hors contrÃ´le iranien d'ici fin avril</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:38%"></div></div>
+        <div class="prob" style="color:var(--amber)">38%</div>
+        <div class="vol"><span class="vol-tag">$3M</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>DÃ©troit d'Ormuz â Proxy pÃ©trolier</h3>
+      <div class="market-row">
+        <div class="name">Trafic Ormuz revient Ã  la normale d'ici fin avril</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:30%"></div></div>
+        <div class="prob" style="color:var(--red)">30%</div>
+        <div class="vol"><span class="vol-tag">$812K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">20+ navires transitent en un jour (mars)</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:30%"></div></div>
+        <div class="prob" style="color:var(--red)">30%</div>
+        <div class="vol"><span class="vol-tag">$404K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">40+ navires transitent en un jour (mars)</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:10%"></div></div>
+        <div class="prob" style="color:var(--red)">10%</div>
+        <div class="vol"></div>
+      </div>
+      <div style="margin-top:12px;padding:10px;background:rgba(239,68,68,0.06);border-radius:6px;font-size:0.75rem;color:var(--amber);">
+        <strong>Signal :</strong> Avant le conflit, 50-60+ navires/jour transitaient le dÃ©troit. Le marchÃ© price une disruption sÃ©vÃ¨re et durable â 70% de chances que le trafic ne normalise pas avant fin avril.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Autres thÃ©Ã¢tres</h3>
+      <div class="market-row">
+        <div class="name">IsraÃ«l â offensive terrestre au Liban d'ici 31 mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:99%"></div></div>
+        <div class="prob" style="color:var(--green)">99%</div>
+        <div class="vol"><span class="vol-tag">$8M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Cessez-le-feu Russie-Ukraine d'ici fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:1%"></div></div>
+        <div class="prob" style="color:var(--red)">1%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Chine envahit TaÃ¯wan d'ici fin 2026 <span class="asym-tag">TAIL</span></div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:11%"></div></div>
+        <div class="prob" style="color:var(--red)">11%</div>
+        <div class="vol"><span class="vol-tag">$13M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Venezuela â Delcy Rodriguez leader fin 2026</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:62%"></div></div>
+        <div class="prob" style="color:var(--amber)">62%</div>
+        <div class="vol"><span class="vol-tag">$76M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Venezuela â Maduro leader fin 2026</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:15%"></div></div>
+        <div class="prob" style="color:var(--red)">15%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Action militaire saoudite contre Iran d'ici 31 mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:17%"></div></div>
+        <div class="prob" style="color:var(--red)">17%</div>
+        <div class="vol"><span class="vol-tag">$9M</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- ECONOMIE & MACRO -->
+<!-- ================================ -->
+<div id="eco" class="section">
+  <div class="grid">
+
+    <div class="card">
+      <h3>Politique monÃ©taire â Fed</h3>
+      <div class="market-row">
+        <div class="name">DÃ©cision Fed avril â Aucun changement</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:95%"></div></div>
+        <div class="prob" style="color:var(--green)">95%</div>
+        <div class="vol"><span class="vol-tag">$20M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">DÃ©cision Fed avril â Hausse 25bps</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:4%"></div></div>
+        <div class="prob" style="color:var(--muted)">4%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">DÃ©cision Fed juin â Aucun changement</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:85%"></div></div>
+        <div class="prob" style="color:var(--green)">85%</div>
+        <div class="vol"><span class="vol-tag">$3M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">DÃ©cision Fed juin â Baisse 25bps</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:12%"></div></div>
+        <div class="prob" style="color:var(--red)">12%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">Baisses 2026 â ZÃ©ro (0 bps) <span class="asym-tag">KEY</span></div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:36%"></div></div>
+        <div class="prob" style="color:var(--red)">36%</div>
+        <div class="vol"><span class="vol-tag">$12M</span></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">Baisses 2026 â Une seule (25 bps)</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:27%"></div></div>
+        <div class="prob" style="color:var(--amber)">27%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">Hausse de taux Fed en 2026 <span class="asym-tag">ASYM</span></div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:22%"></div></div>
+        <div class="prob" style="color:var(--purple)">22%</div>
+        <div class="vol"><span class="vol-tag">$326K</span></div>
+      </div>
+      <div style="margin-top:10px;padding:10px;background:rgba(239,68,68,0.06);border-radius:6px;font-size:0.75rem;color:var(--amber);">
+        <strong>CumulÃ© :</strong> 63% de probabilitÃ© d'au maximum une seule baisse en 2026. Le marchÃ© price une Fed piÃ©gÃ©e entre inflation pÃ©troliÃ¨re et ralentissement.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Inflation & Croissance</h3>
+      <div class="market-row">
+        <div class="name">Inflation mars (annualisÃ©e) â¤2.8%</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:94%"></div></div>
+        <div class="prob" style="color:var(--green)">94%</div>
+        <div class="vol"><span class="vol-tag">$2M</span></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">Inflation 2026 au-dessus de 3%</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:98%"></div></div>
+        <div class="prob" style="color:var(--red)">98%</div>
+        <div class="vol"><span class="vol-tag">$256K</span></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">Inflation 2026 au-dessus de 3.5%</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:68%"></div></div>
+        <div class="prob" style="color:var(--amber)">68%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">S&P 500 â Q1 nÃ©gatif (<0%)</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:96%"></div></div>
+        <div class="prob" style="color:var(--red)">96%</div>
+        <div class="vol"><span class="vol-tag">$229K</span></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">RÃ©cession US d'ici fin 2026 <span class="asym-tag">ASYM</span></div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:36%"></div></div>
+        <div class="prob" style="color:var(--purple)">36%</div>
+        <div class="vol"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Taux globaux & Banques centrales</h3>
+      <div class="market-row">
+        <div class="name">PBOC baisse taux d'ici fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:1%"></div></div>
+        <div class="prob" style="color:var(--muted)">1%</div>
+        <div class="vol"><span class="vol-tag">$109K</span></div>
+      </div>
+      <div style="margin-top:14px;font-size:0.78rem;color:var(--muted);line-height:1.6;">
+        La PBOC est pricÃ©e comme totalement immobile. Le contraste avec le BrÃ©sil (Selic cut Ã  14.75% le 18 mars) reflÃ¨te la divergence massive entre EM dovish et DM hawkish.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Ãnergie & RÃ©serves stratÃ©giques</h3>
+      <div class="market-row">
+        <div class="name">PÃ©trole brut (CL) â¥$100 fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:77%"></div></div>
+        <div class="prob" style="color:var(--amber)">77%</div>
+        <div class="vol"><span class="vol-tag">$49M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">PÃ©trole brut (CL) â¥$105 fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:56%"></div></div>
+        <div class="prob" style="color:var(--amber)">56%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">PÃ©trole brut â nouveau record historique d'ici 31 mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:4%"></div></div>
+        <div class="prob" style="color:var(--muted)">4%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">RÃ©serves US crude â¤375M barils d'ici mai</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:54%"></div></div>
+        <div class="prob" style="color:var(--amber)">54%</div>
+        <div class="vol"><span class="vol-tag">$194K</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- FINANCE & MARCHÃS -->
+<!-- ================================ -->
+<div id="fin" class="section">
+  <div class="grid">
+
+    <div class="card">
+      <h3>Or & MÃ©taux prÃ©cieux</h3>
+      <div class="market-row">
+        <div class="name">Or (GC) sous $4,500 fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:95%"></div></div>
+        <div class="prob" style="color:var(--green)">95%</div>
+        <div class="vol"><span class="vol-tag">$2M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Or (GC) sous $4,300 fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:29%"></div></div>
+        <div class="prob" style="color:var(--amber)">29%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Or (GC) sous $4,200 fin juin</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:60%"></div></div>
+        <div class="prob" style="color:var(--amber)">60%</div>
+        <div class="vol"><span class="vol-tag">$2M</span></div>
+      </div>
+      <div class="market-row highlight">
+        <div class="name">Or (GC) au-dessus de $5,500 fin juin <span class="asym-tag">ASYM</span></div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:23%"></div></div>
+        <div class="prob" style="color:var(--purple)">23%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Argent (SI) sous $65 fin juin</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:83%"></div></div>
+        <div class="prob" style="color:var(--green)">83%</div>
+        <div class="vol"><span class="vol-tag">$3M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Argent (SI) sous $65 fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:56%"></div></div>
+        <div class="prob" style="color:var(--amber)">56%</div>
+        <div class="vol"><span class="vol-tag">$929K</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Indices & Actions</h3>
+      <div class="market-row">
+        <div class="name">S&P 500 ouvre en hausse le 23 mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:39%"></div></div>
+        <div class="prob" style="color:var(--red)">39%</div>
+        <div class="vol"><span class="vol-tag">$62K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">S&P 500 touche 5,700 en mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:7%"></div></div>
+        <div class="prob" style="color:var(--muted)">7%</div>
+        <div class="vol"><span class="vol-tag">$54K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Apple (AAPL) ferme au-dessus de $210 fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:98%"></div></div>
+        <div class="prob" style="color:var(--green)">98%</div>
+        <div class="vol"><span class="vol-tag">$293K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">NVIDIA (NVDA) sous $164 en mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:37%"></div></div>
+        <div class="prob" style="color:var(--amber)">37%</div>
+        <div class="vol"><span class="vol-tag">$739K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Netflix (NFLX) semaine 23 mars : $90-$100</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:69%"></div></div>
+        <div class="prob" style="color:var(--amber)">69%</div>
+        <div class="vol"><span class="vol-tag">$58K</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>IPOs & Corporate</h3>
+      <div class="market-row">
+        <div class="name">SpaceX IPO d'ici fin 2026</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:85%"></div></div>
+        <div class="prob" style="color:var(--green)">85%</div>
+        <div class="vol"><span class="vol-tag">$111K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">SpaceX capi IPO â¥$2T</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:55%"></div></div>
+        <div class="prob" style="color:var(--amber)">55%</div>
+        <div class="vol"><span class="vol-tag">$380K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Cerebras IPO avant 2027</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:88%"></div></div>
+        <div class="prob" style="color:var(--green)">88%</div>
+        <div class="vol"><span class="vol-tag">$5M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Anthropic â Pas d'IPO (reste privÃ©e)</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:94%"></div></div>
+        <div class="prob" style="color:var(--green)">94%</div>
+        <div class="vol"><span class="vol-tag">$809K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">MicroStrategy vend Bitcoin d'ici fin 2026</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:12%"></div></div>
+        <div class="prob" style="color:var(--red)">12%</div>
+        <div class="vol"><span class="vol-tag">$22M</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Plus grande entreprise par capitalisation</h3>
+      <div class="market-row">
+        <div class="name">Fin mars â NVIDIA</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:99%"></div></div>
+        <div class="prob" style="color:var(--green)">99%</div>
+        <div class="vol"><span class="vol-tag">$14M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Fin avril â NVIDIA</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:92%"></div></div>
+        <div class="prob" style="color:var(--green)">92%</div>
+        <div class="vol"><span class="vol-tag">$121K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Fin juin â NVIDIA</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:83%"></div></div>
+        <div class="prob" style="color:var(--green)">83%</div>
+        <div class="vol"><span class="vol-tag">$3M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Fin dÃ©cembre â NVIDIA</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:67%"></div></div>
+        <div class="prob" style="color:var(--amber)">67%</div>
+        <div class="vol"><span class="vol-tag">$1M</span></div>
+      </div>
+      <div style="margin-top:10px;font-size:0.75rem;color:var(--muted);">
+        Conviction dÃ©croissante : 99% â 67% de mars Ã  dÃ©cembre. Le marchÃ© voit un risque de rotation au S2 â Alphabet challenger Ã  14% fin dÃ©cembre.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- TECHNOLOGIE & IA -->
+<!-- ================================ -->
+<div id="tech" class="section">
+  <div class="grid">
+
+    <div class="card">
+      <h3>Course aux modÃ¨les IA</h3>
+      <div class="market-row">
+        <div class="name">Meilleur modÃ¨le IA (style) fin mars â Anthropic</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:94%"></div></div>
+        <div class="prob" style="color:var(--green)">94%</div>
+        <div class="vol"><span class="vol-tag">$712K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Meilleur modÃ¨le IA (style) fin mars â xAI</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:3%"></div></div>
+        <div class="prob" style="color:var(--muted)">3%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Meilleur modÃ¨le IA fin juin â Anthropic</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:54%"></div></div>
+        <div class="prob" style="color:var(--amber)">54%</div>
+        <div class="vol"><span class="vol-tag">$2M</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Meilleur modÃ¨le IA fin juin â Google</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:27%"></div></div>
+        <div class="prob" style="color:var(--amber)">27%</div>
+        <div class="vol"></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Meilleur modÃ¨le IA codage fin mars â OpenAI</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:92%"></div></div>
+        <div class="prob" style="color:var(--green)">92%</div>
+        <div class="vol"><span class="vol-tag">$985K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Meilleur modÃ¨le IA codage fin mars â Anthropic</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:6%"></div></div>
+        <div class="prob" style="color:var(--red)">6%</div>
+        <div class="vol"></div>
+      </div>
+      <div style="margin-top:12px;padding:10px;background:rgba(59,130,246,0.06);border-radius:6px;font-size:0.75rem;color:var(--blue);">
+        <strong>Fragmentation :</strong> Anthropic domine le general-purpose, OpenAI le codage. Google est le challenger pour le H2. Le marchÃ© price une spÃ©cialisation par vertical, pas un winner-take-all.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>DeepSeek & CompÃ©tition chinoise</h3>
+      <div class="market-row">
+        <div class="name">DeepSeek V4 publiÃ© d'ici fin mars</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-low" style="width:4%"></div></div>
+        <div class="prob" style="color:var(--muted)">4%</div>
+        <div class="vol"><span class="vol-tag">$767K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">DeepSeek V4 publiÃ© d'ici mi-avril</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-mid" style="width:57%"></div></div>
+        <div class="prob" style="color:var(--amber)">57%</div>
+        <div class="vol"></div>
+      </div>
+      <div style="margin-top:10px;font-size:0.75rem;color:var(--muted);">
+        Le marchÃ© anticipe un lÃ©ger retard dans la prochaine salve de la course aux modÃ¨les chinois â probable sortie mi-avril.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Plateformes & Apps</h3>
+      <div class="market-row">
+        <div class="name">#1 App gratuite US le 24 mars â ChatGPT</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:93%"></div></div>
+        <div class="prob" style="color:var(--green)">93%</div>
+        <div class="vol"><span class="vol-tag">$29K</span></div>
+      </div>
+      <div class="market-row">
+        <div class="name">Apple â iPhone pliable avant 2027</div>
+        <div class="prob-bar-container"><div class="prob-bar prob-high" style="width:84%"></div></div>
+        <div class="prob" style="color:var(--green)">84%</div>
+        <div class="vol"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================ -->
+<!-- PARIS ASYMÃTRIQUES -->
+<!-- ================================ -->
+<div id="tails" class="section">
+  <p style="color:var(--muted);font-size:0.82rem;margin-bottom:16px;">
+    Paris avec volume suffisant et probabilitÃ© entre 10-40% â les scÃ©narios "tail" que le marchÃ© price comme rÃ©els mais non-consensuels. Ce sont les marchÃ©s oÃ¹ une surprise aurait le plus gros impact sur les actifs.
+  </p>
+
+  <div class="tail-grid">
+    <div class="tail-card">
+      <div class="title" style="color:var(--red)">Hausse de taux Fed en 2026</div>
+      <div class="odds">22%</div>
+      <div class="rationale">Si l'inflation persiste au-dessus de 3.5% et que l'emploi rÃ©siste, la Fed pourrait Ãªtre forcÃ©e de remonter. Impact : UST 10Y au-dessus de 5%, crÃ©dit HY en stress sÃ©vÃ¨re, dollar en forte hausse.</div>
+    </div>
+
+    <div class="tail-card">
+      <div class="title" style="color:var(--amber)">Chute du rÃ©gime iranien d'ici juin</div>
+      <div class="odds">24%</div>
+      <div class="rationale">$20M de volume. Si le rÃ©gime tombe, Brent retombe vers $70-80 en quelques semaines. C'est le scÃ©nario le plus bullish pour les actifs risquÃ©s â cessez-le-feu + normalisation Ormuz en un seul move.</div>
+    </div>
+
+    <div class="tail-card">
+      <div class="title" style="color:var(--purple)">Or au-dessus de $5,500 d'ici juin</div>
+      <div class="odds">23%</div>
+      <div class="rationale">Un quart du marchÃ© parie sur un nouveau leg haussier massif. Implique une perte de confiance dans le dollar comme rÃ©serve ou une escalade gÃ©opolitique ma©ÕÉÍÕÁÁ³¥µ¹Ñ¥É¸ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÑ¥°µÉø(ñ¥Ø±ÍÌôÑ¥Ñ±ÍÑå±ô½±½ÈéÙÈ ´µÉ¤ùK¥ÍÍ¥½¸UL¥¤¥¸ÈÀÈØð½¥Øø(ñ¥Ø±ÍÌô½ÌøÌØð½¥Øø(ñ¥Ø±ÍÌôÉÑ¥½¹±ùA±ÕÌÕ¸Ñ¥ÉÌ¸1¡½Ã¥ÑÉ½±¥È¬ÉÍÍÉÉµ¹ÐÌ½¹¥Ñ¥½¹Ì¥¹¹§¡ÉÌ¬µÕÈÉ¥¹¹µ¹Ð½ÉÁ½ÉÑÄ¸ÌÕP½¹ÙÉ¹Ð¸!¥ÍÑ½É¥ÅÕµ¹Ð°ÑÑÁÉ½¥±¥Ó¤ÁË¥¡Í½ÕÙ¹ÐÕ¹µÓ¥É¥±¥ÍÑ¥½¸¸ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÑ¥°µÉø(ñ¥Ø±ÍÌôÑ¥Ñ±ÍÑå±ô½±½ÈéÙÈ ´µµÈ¤û9±-¡É¡½ÉÌ½¹ÑËÑ±¥É¹¥¸¡ÙÉ¥°¤ð½¥Øø(ñ¥Ø±ÍÌô½ÌøÌàð½¥Øø(ñ¥Ø±ÍÌôÉÑ¥½¹±ùAÉ½áä¥ÉÐÁ½ÕÈ±Á¥Ó¤áÁ½ÉÐ¥É¹¥¹¹¸M¤-¡ÉÑ½µ°±Í¥¹É¥¼ÍÍÁ½ÕÈ±	É¹ÐÍÉ¥ÐÄÈÀ´ÄÌÀÍÕÈ±ÍÁ¥­ÁÕ¥ÌäÀ´ÄÀÀÁ½ÍÐµÍÑ¥±¥ÍÑ¥½¸¸ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÑ¥°µÉø(ñ¥Ø±ÍÌôÑ¥Ñ±ÍÑå±ô½±½ÈéÙÈ ´µå¸¤ù¡¥¹¹Ù¡¥ÐQ½Ý¸¥¤¥¸ÈÀÈØð½¥Øø(ñ¥Ø±ÍÌô½ÌøÄÄð½¥Øø(ñ¥Ø±ÍÌôÉÑ¥½¹±øÄÍ4Ù½±ÕµP±Ñ¥°É¥Í¬¥½Á½±¥Ñ¥ÅÕÕ±Ñ¥µ¸U¹Í±Q½Ý¸Á¹¹Ð±½¹±¥Ð%É¸Ë¥É¥ÐÕ¸¡½ÍåÍÓ¥µ¥ÅÕÍÕÈ±ÌÍµ¤µ½¹ÕÑÕÉÌÐ±Ì¡¹¹ÌÁÁÉ½Ù¥Í¥½¹¹µ¹Ðµ½¹¥±Ì¸ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÑ¥°µÉø(ñ¥Ø±ÍÌôÑ¥Ñ±ÍÑå±ô½±½ÈéÙÈ ´µµÈ¤ùIéA¡±Ù¤¹ÑÉ¸%É¸¡¥µÉ¤ð½¥Øø(ñ¥Ø±ÍÌô½ÌøÌÈð½¥Øø(ñ¥Ø±ÍÌôÉÑ¥½¹±øÄÁ4Ù½±Õµ¸AÉ½áäÁ½ÕÈÕ¸¡¹µ¹ÐË¥¥µÍ½ÐPÍ¤±¥±ÌÔM¡ ÉÑ½ÕÉ¹¸%É¸°±¥µÁ±¥ÅÕÕ¸½¹Éµ¹ÐÔË¥¥µÌ5½±±¡Ì¸M¥¹°Õ±±¥Í Ã¥ÑÉ½±µ½å¸ÑÉµ¸ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌôÑ¥°µÉø(ñ¥Ø±ÍÌôÑ¥Ñ±ÍÑå±ô½±½ÈéÙÈ ´µÉ¤ù5¥É½MÑÉÑäÙ¹Ô	¥Ñ½¥¸ ÈÀÈØ¤ð½¥Øø(ñ¥Ø±ÍÌô½ÌøÄÈð½¥Øø(ñ¥Ø±ÍÌôÉÑ¥½¹±øÈÉ4Ù½±Õµ¸M¤Må±½ÈÍÐ½É¤Ù¹É°ÍÐÕ¸Í¥¹°ÍÑÉÍÌÍåÍÓ¥µ¥ÅÕÉåÁÑ¼ÐÕ¸Ñ±åÍÕÈÁ½ÕÈ	QÍ½ÕÌÔÁ,¸1¥ÐÅÕ±µÉ£¤¹ÁÉ¥ÅÕÄÈÍÕ¡ÉÕ¹½¹¥¹¹Ì±¥±¸5MQH¸ð½¥Øø(ð½¥Øø(ð½¥Øø(ð½¥Øø((ñ¥Ø±ÍÌô½½ÑÈø(¥»¥Ë¤ÁÈ±ÕPMå¹Ñ£¡ÍA½±åµÉ­ÐñÈø(½¹»¥Ì½±±Ó¥ÌÍÕÈÁ½±åµÉ­Ð¹½´±ÈÈµÉÌÈÀÈØ¸1ÌÁÉ½¥±¥Ó¥ÌÉ³¡Ñ¹Ð±ÌÁÉ¥àµÉ£¤°ÁÌÌÁË¥Ù¥Í¥½¹Ì¸ñÈø(¥±ÑË¤è¥½¹½µ¥°¥½Á½±¥Ñ¥ÅÕ°Ñ¡¹½±½¥Õ¹¥ÅÕµ¹Ð¸á±ÕÐèÍÁ½ÉÑÌ°Á½Á±°Õ±ÑÕÉ¸ñÈø(¤¸ÍÐÁÌÕ¸½¹Í¥°¥¹ÙÍÑ¥ÍÍµ¹Ð¸(ð½¥Øø((ñÍÉ¥ÁÐø)Õ¹Ñ¥½¸Í¡½ÝMÑ¥½¸¡¥¤ì(½Õµ¹Ð¹ÅÕÉåM±Ñ½É±° ¹ÍÑ¥½¸¤¹½É ¡ÌôøÌ¹±ÍÍ1¥ÍÐ¹Éµ½Ù Ñ¥Ù¤¤ì(½Õµ¹Ð¹ÅÕÉåM±Ñ½É±° ¹Ñ¤¹½É ¡ÐôøÐ¹±ÍÍ1¥ÍÐ¹Éµ½Ù Ñ¥Ù¤¤ì(½Õµ¹Ð¹Ñ±µ¹Ñ	å%¡¥¤¹±ÍÍ1¥ÍÐ¹ Ñ¥Ù¤ì(Ù¹Ð¹ÑÉÐ¹±ÍÍ1¥ÍÐ¹ Ñ¥Ù¤ì)ô(ð½ÍÉ¥ÁÐø(ð½½äø(ð½¡Ñµ°ø
